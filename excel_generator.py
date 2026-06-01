@@ -124,9 +124,13 @@ def generate_excel(template_path, csv_path, output_path,
 
     # ── Open Excel via win32com ───────────────────────────────────────────────
     update_progress(progress, 50, "Opening Excel...")
+    import pythoncom
+    pythoncom.CoInitialize()
     excel = win32com.client.Dispatch("Excel.Application")
     excel.Visible = False
     excel.DisplayAlerts = False
+    excel.ScreenUpdating = False
+    excel.EnableEvents = False
 
     abs_template = os.path.abspath(template_path)
     abs_output   = os.path.abspath(output_path)
@@ -265,6 +269,7 @@ def generate_excel(template_path, csv_path, output_path,
 
     finally:
         excel.Quit()
+        pythoncom.CoUninitialize()
 
     # ── Cleanup temp images ───────────────────────────────────────────────────
     print("Cleaning up temp images...")
