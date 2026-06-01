@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pole Survey Report Generator</title>
+    <style>
+        body {
+            font-family: Calibri, sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 480px;
+        }
+
+        h1 {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: bold;
+            color: #444;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        input[type="text"],
+        input[type="file"] {
+            width: 100%;
+            padding: 8px 10px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 13px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #2c7be5;
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1a5fb4;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 16px;
+            font-size: 13px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Pole Survey Report Generator</h1>
+
+        <form action="/generate" method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
+            <label>PROJECT NAME</label>
+            <input type="text" name="project_name" placeholder="e.g. NEXLOGIC" required>
+
+            <label>SITE NAME</label>
+            <input type="text" name="site_name" placeholder="e.g. Valenzuela Pole Site" required>
+
+            <label>ADDRESS</label>
+            <input type="text" name="address" placeholder="e.g. ALONG FORTUNE" required>
+
+            <label>DATE TAKEN</label>
+            <input type="text" name="date_taken" placeholder="e.g. MAY 22, 2026" required>
+
+            <label>SURVEY NAME (for sheet tabs)</label>
+            <input type="text" name="survey_name" placeholder="e.g. FORTUNE" required>
+
+            <label>UPLOAD CSV FILE</label>
+            <input type="file" name="csv_file" accept=".csv" required>
+
+            <button type="submit">⚙️ Generate Report</button>
+        </form>
+
+        <div class="loading" id="loadingSection">
+            <p id="loadingMsg">⏳ Starting...</p>
+            <div style="background:#e0e0e0; border-radius:8px; overflow:hidden; margin-top:8px;">
+                <div id="progressBar" style="height:24px; width:0%; background:#2c7be5; transition:width 0.4s; border-radius:8px;"></div>
+            </div>
+            <p id="progressPercent" style="font-size:18px; font-weight:bold; color:#2c7be5;">0%</p>
+        </div>
+    </div>
+
+    <script>
+        let pollInterval = null;
+
+        function showLoading() {
+            document.getElementById('loadingSection').style.display = 'block';
+            document.querySelector('button').disabled = true;
+            pollInterval = setInterval(updateProgress, 1000);
+        }
+
+        function updateProgress() {
+            fetch('/progress')
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('progressBar').style.width    = data.percent + '%';
+                    document.getElementById('progressPercent').innerText  = data.percent + '%';
+                    document.getElementById('loadingMsg').innerText       = data.message;
+
+                    if (data.percent >= 100) {
+                        clearInterval(pollInterval);
+                        document.getElementById('loadingMsg').innerText      = '✅ Done! Downloading...';
+                        document.getElementById('progressPercent').innerText = '100%';
+                    }
+                });
+        }
+    </script>
+</body>
+</html>
