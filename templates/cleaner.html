@@ -1,0 +1,2150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Cleaner</title>
+    <style>
+
+        *, *::before, *::after {
+            transition: background-color 0.2s ease, border-color 0.2s ease,
+                        box-shadow 0.2s ease, opacity 0.2s ease,
+                        transform 0.15s ease, color 0.2s ease;
+        }
+
+        .btn:active, button:active {
+            transform: scale(0.97);
+            opacity: 0.88;
+        }
+
+        .card {
+            transition: box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 6px 28px rgba(100,160,255,0.16), 0 2px 6px rgba(0,0,0,0.07);
+            border-color: rgba(100,170,255,0.75);
+        }
+
+        .nav-btn {
+            transition: background-color 0.2s ease, transform 0.15s ease;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .nav-btn:active {
+            transform: scale(0.97);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: Calibri, sans-serif;
+            min-height: 100vh;
+            padding-top: 70px;
+            background-color: #ffffff;
+            background-image:
+                radial-gradient(ellipse 60% 40% at 0% 0%, rgba(100,180,255,0.28) 0%, transparent 65%),
+                radial-gradient(ellipse 60% 40% at 100% 0%, rgba(120,160,255,0.22) 0%, transparent 65%),
+                radial-gradient(ellipse 60% 40% at 0% 100%, rgba(140,180,255,0.20) 0%, transparent 65%),
+                radial-gradient(ellipse 60% 40% at 100% 100%, rgba(100,200,255,0.22) 0%, transparent 65%),
+                radial-gradient(ellipse 40% 30% at 50% 0%, rgba(120,190,255,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 30% at 50% 100%, rgba(120,190,255,0.15) 0%, transparent 60%);
+            background-attachment: fixed;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            padding: 16px;
+            background-color: #2c3e50;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            padding: 10px 24px;
+            background-color: #3d5166;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .nav-btn:hover { background-color: #2c7be5; }
+        .nav-btn.active { background-color: #2c7be5; }
+
+        .page {
+            padding: 30px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 22px;
+            color: #2c3e50;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+
+        .card {
+            background: rgba(255,255,255,0.96);
+            border-radius: 12px;
+            box-shadow: 0 4px 24px rgba(100,160,255,0.10), 0 1px 4px rgba(0,0,0,0.05);
+            border: 1.5px solid rgba(100,170,255,0.55);
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+
+
+        h2 {
+            font-size: 16px;
+            color: #2c3e50;
+            margin-bottom: 16px;
+            border-bottom: 2px solid #2c7be5;
+            padding-bottom: 8px;
+        }
+
+        label {
+            font-size: 13px;
+            font-weight: bold;
+            color: #444;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 8px 10px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background-color: #2c7be5;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+
+        .btn:hover { background-color: #1a5fb4; }
+        .btn-green { background-color: #28a745; }
+        .btn-green:hover { background-color: #1e7e34; }
+        .btn-red { background-color: #dc3545; }
+        .btn-red:hover { background-color: #bd2130; }
+        .btn-orange { background-color: #fd7e14; }
+        .btn-orange:hover { background-color: #e8670a; }
+        .btn-gray { background-color: #6c757d; }
+        .btn-gray:hover { background-color: #545b62; }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .stat-box {
+            background: linear-gradient(160deg, #f0f4f8 80%, #dce8fa 100%);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            border-top: 3px solid #2c7be5;
+        }
+
+        .stat-box .number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c7be5;
+        }
+
+        .stat-box .label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        th {
+            background: #2c3e50;
+            color: white;
+            padding: 8px;
+            text-align: left;
+        }
+
+        td {
+            padding: 7px 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:hover { background: #f9f9f9; }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .badge-red { background: #fde8e8; color: #dc3545; }
+        .badge-orange { background: #fff3e0; color: #fd7e14; }
+        .badge-green { background: #e8f5e9; color: #28a745; }
+
+        .section-hidden { display: none; }
+
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .download-card {
+            background: linear-gradient(160deg, #f0f4f8 70%, #dce8fa 100%);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            border-top: 3px solid #2c7be5;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .download-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(44,123,229,0.13);
+        }
+
+        .download-card p {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .download-card .count {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .fix-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: #fff3e0;
+            border-radius: 6px;
+            flex-wrap: wrap;
+        }
+
+        .fix-row span {
+            flex: 1;
+            font-size: 13px;
+            min-width: 200px;
+        }
+
+        .fix-row select {
+            flex: 2;
+            margin-bottom: 0;
+            min-width: 150px;
+        }
+
+        .fix-row input[type="text"] {
+            flex: 2;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 13px;
+            min-width: 150px;
+        }
+
+        .merge-row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 10px;
+            background: linear-gradient(90deg, #e8f4fd 80%, #dce8fa 100%);
+            border-radius: 6px;
+            border-left: 3px solid #2c7be5;
+            flex-wrap: wrap;
+        }
+
+        .merge-row span {
+            font-size: 13px;
+            font-weight: bold;
+            min-width: 180px;
+        }
+
+        .merge-row .count-badge {
+            background: #2c7be5;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            margin-right: 4px;
+        }
+
+        .merge-row select {
+            flex: 2;
+            margin-bottom: 0;
+            min-width: 150px;
+        }
+
+        #loadingUpload {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #888;
+        }
+
+        .merge-search-wrap {
+            position: relative;
+            flex: 2;
+            min-width: 200px;
+        }
+
+        .merge-search-input {
+            width: 100%;
+            padding: 7px 10px;
+            border: 1.5px solid #ccc;
+            border-radius: 6px;
+            font-size: 13px;
+            box-sizing: border-box;
+        }
+
+        .merge-search-input:focus {
+            outline: none;
+            border-color: #2c7be5;
+        }
+
+        .merge-search-input.selected-keep {
+            background: #f0f4f8;
+            color: #888;
+            border-color: #ccc;
+        }
+
+        .merge-search-input.selected-merge {
+            background: #e8f5e9;
+            color: #1e7e34;
+            border-color: #28a745;
+            font-weight: bold;
+        }
+
+        .merge-search-input.selected-rename {
+            background: #fff3e0;
+            color: #e8670a;
+            border-color: #fd7e14;
+            font-weight: bold;
+        }
+
+        .merge-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+            z-index: 999;
+            max-height: 220px;
+            overflow-y: auto;
+            margin-top: 2px;
+        }
+
+        .merge-dropdown.open { display: block; }
+
+        .merge-option {
+            padding: 8px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .merge-option:last-child { border-bottom: none; }
+
+        .merge-option:hover { background: #f0f4f8; }
+
+        .merge-option.opt-keep { color: #555; }
+        .merge-option.opt-merge { color: #1e7e34; }
+        .merge-option.opt-rename { color: #e8670a; }
+        .merge-option.opt-custom { color: #2c7be5; font-style: italic; }
+
+        .merge-option mark {
+            background: #fff176;
+            border-radius: 2px;
+            padding: 0 1px;
+            font-style: normal;
+        }
+
+        .merge-custom-input {
+            display: none;
+            width: 100%;
+            margin-top: 6px;
+            padding: 7px 10px;
+            border: 1.5px solid #fd7e14;
+            border-radius: 6px;
+            font-size: 13px;
+            box-sizing: border-box;
+        }
+
+        .merge-custom-input:focus { outline: none; border-color: #e8670a; }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <a href="/" class="nav-btn">📋 Report Generator</a>
+        <a href="/cleaner" class="nav-btn active">🧹 CSV Cleaner</a>
+    </div>
+
+    <div class="page">
+        <h1 style="background:linear-gradient(90deg,#2c3e50,#2c7be5); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">🧹 CSV Cleaner & Organizer</h1>
+
+        <!-- Upload -->
+        <div class="card">
+            <h2>📁 Upload CSV</h2>
+            <label>Select your pole survey CSV file</label>
+            <input type="file" id="csvFile" accept=".csv">
+            <button class="btn" onclick="analyzeCSV()">🔍 Analyze CSV</button>
+            <button class="btn btn-gray" onclick="uploadNew()">📂 Upload New CSV</button>
+            <button class="btn btn-red" onclick="resetAll()">🔄 Reset All</button>
+        </div>
+
+        <div id="loadingUpload">⏳ Analyzing your CSV, please wait...</div>
+
+        <!-- Analysis -->
+        <div class="card section-hidden" id="analysisSection">
+            <h2>📊 Analysis Results</h2>
+            <div class="stat-grid" id="statGrid"></div>
+        </div>
+
+        <!-- Pole Number Typos -->
+        <div class="card section-hidden" id="poleTypoSection">
+            <h2>🔢 Possible Pole Number Typos</h2>
+            <p style="font-size:13px; color:#666; margin-bottom:12px;">
+                These pole numbers look similar to placeholder values like NPT.
+                Review and correct if needed.
+            </p>
+            <div id="poleTypoFixes"></div>
+            <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-green" onclick="applyPoleTypoFixes()">✅ Apply Fixes</button>
+                <button class="btn btn-gray" onclick="skipPoleTypos()">⏭️ Skip</button>
+            </div>
+        </div>
+
+        <!-- Spelling -->
+        <div class="card section-hidden" id="spellingSection">
+            <h2>✏️ Possible Misspellings</h2>
+            <p style="font-size:13px; color:#666; margin-bottom:12px;">
+                These barangay/municipality names look similar. Choose the correct version or type your own.
+            </p>
+            <div id="spellingFixes"></div>
+            <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-green" onclick="applyFixes()">✅ Apply Fixes</button>
+                <button class="btn btn-gray" onclick="skipFixes()">⏭️ Skip</button>
+                <button class="btn btn-gray" onclick="goBack('spelling')">◀ Back</button>
+            </div>
+        </div>
+
+        <!-- Merge Barangays -->
+        <div class="card section-hidden" id="mergeBarangaySection">
+            <h2>🔀 Merge Barangays</h2>
+            <p style="font-size:13px; color:#666; margin-bottom:12px;">
+                Move poles from one barangay into another. Select destination for each group.
+            </p>
+            <div id="mergeBarangayRows"></div>
+            <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-green" onclick="applyMerge('barangay')">✅ Apply Barangay Merges</button>
+                <button class="btn btn-gray" onclick="skipMerge('barangay')">⏭️ Skip</button>
+                <button class="btn btn-gray" onclick="goBack('mergeBarangay')">◀ Back</button>
+            </div>
+        </div>
+
+        <!-- Merge Municipalities -->
+        <div class="card section-hidden" id="mergeMunicipalitySection">
+            <h2>🔀 Merge Municipalities</h2>
+            <p style="font-size:13px; color:#666; margin-bottom:12px;">
+                Move poles from one municipality into another. Select destination for each group.
+            </p>
+            <div id="mergeMunicipalityRows"></div>
+            <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-green" onclick="applyMerge('municipality')">✅ Apply Municipality Merges</button>
+                <button class="btn btn-gray" onclick="skipMerge('municipality')">⏭️ Skip</button>
+                <button class="btn btn-gray" onclick="goBack('mergeMunicipality')">◀ Back</button>
+            </div>
+        </div>
+
+        <!-- Duplicates -->
+        <div class="card section-hidden" id="duplicatesSection">
+            <h2>🔁 Possible Duplicates Found</h2>
+            <p style="font-size:13px; color:#666; margin-bottom:12px;">
+                Review these poles — check the ones you want to <b>remove</b> then click Confirm.
+            </p>
+            <div id="duplicatesTable"></div>
+            <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-red" onclick="selectAllDuplicates()">☑️ Select All</button>
+                <button class="btn" onclick="selectNoneDuplicates()">⬜ Select None</button>
+                <button class="btn btn-green" onclick="confirmDuplicates()">✅ Save & Continue</button>
+                <button class="btn btn-gray" onclick="goBack('duplicates')">◀ Back</button>
+            </div>
+        </div>
+
+        <!-- Pole Sequence Organizer -->
+        <div class="card section-hidden" id="sequenceSection">
+            <h2>🔢 Pole Sequence Organizer</h2>
+            <p style="font-size:13px; color:#666; margin-bottom:12px;">
+                Review and correct the pole order using the <b>#number</b> from remarks.
+                This sets the actual field sequence before address resolution.
+            </p>
+            <div id="sequenceDupWarning" style="display:none; background:#fde8e8; border:1px solid #dc3545; border-radius:6px; padding:10px 14px; margin-bottom:12px; font-size:13px; color:#dc3545;">
+                ⚠️ <b>Duplicate item numbers detected.</b>
+                <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
+                    <button class="btn btn-red" style="padding:6px 14px; font-size:12px;" onclick="autoFixSequence()">⚡ Auto Fix</button>
+                    <span style="font-size:12px; color:#888; align-self:center;">or fix manually below</span>
+                </div>
+            </div>
+            <div style="margin-bottom:10px; display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+                <input type="text" id="seqSearch"
+                    placeholder="🔍 Search pole number or remarks..."
+                    oninput="renderSequenceTable()"
+                    style="flex:1; min-width:200px; padding:7px 10px; border:1px solid #ccc;
+                           border-radius:6px; font-size:13px;">
+                <button class="btn btn-green" onclick="renumberSequence()">🔄 Renumber</button>
+                <button class="btn" onclick="addSequenceRow()">➕ Add Row</button>
+                <span id="sequenceCount" style="font-size:13px; color:#888; margin-left:4px;"></span>
+            </div>
+            <div style="overflow-x:auto;">
+                <table id="sequenceTable" style="width:100%; border-collapse:collapse; font-size:13px;">
+                    <thead>
+                        <tr>
+                            <th style="background:#2c3e50; color:white; padding:8px; width:60px;">#</th>
+                            <th style="background:#2c3e50; color:white; padding:8px; width:110px;">Pole No.</th>
+                            <th style="background:#2c3e50; color:white; padding:8px;">Remarks</th>
+                            <th style="background:#2c3e50; color:white; padding:8px; width:130px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sequenceBody"></tbody>
+                </table>
+            </div>
+            <div style="margin-top:14px; display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-green" onclick="saveSequence()">✅ Save & Continue</button>
+                <button class="btn btn-gray" onclick="skipSequence()">⏭️ Skip</button>
+                <button class="btn btn-gray" onclick="goBack('sequence')">◀ Back</button>
+            </div>
+        </div>
+
+        <!-- Address Resolver -->
+        <div class="card section-hidden" id="addressSection">
+            <h2>🗺️ Resolve Addresses from Remarks</h2>
+            <p style="font-size:13px; color:#666; margin-bottom:12px;">
+                This will find the street name from coordinates and verify 
+                the landmark from remarks using OpenStreetMap. 
+                Requires internet connection. May take a few minutes.
+            </p>
+            <div style="background:#fff3e0; padding:12px; border-radius:6px; margin-bottom:16px; font-size:13px;">
+                ⚠️ <b>Note:</b> This will replace the <b>remarks</b> column with formatted addresses like:<br>
+                <code>ALONG FORTUNE ST, RIGHT KB RIDERS HUB</code>
+            </div>
+            <div id="addressProgress" style="display:none; margin-bottom:16px;">
+                <p id="addressMsg" style="font-size:13px; color:#888; margin-bottom:8px;">Starting...</p>
+                <div style="background:#e0e0e0; border-radius:8px; overflow:hidden;">
+                    <div id="addressBar" style="height:20px; width:0%; background:#2c7be5; transition:width 0.4s; border-radius:8px;"></div>
+                </div>
+                <p id="addressPercent" style="font-size:16px; font-weight:bold; color:#2c7be5; margin-top:4px;">0%</p>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-green" id="resolveBtn" onclick="resolveAddresses()">🗺️ Start Resolving</button>
+                <button class="btn btn-gray" onclick="skipAddresses()">⏭️ Skip</button>
+                <button class="btn btn-gray" onclick="goBack('address')">◀ Back</button>
+            </div>
+        </div>
+
+        <!-- Downloads -->
+        <div class="card section-hidden" id="downloadSection">
+            <h2>⬇️ Download Options</h2>
+            <div style="margin-bottom:12px; display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn btn-gray" onclick="reopenSpelling()">✏️ Re-edit Spelling</button>
+                <button class="btn btn-gray" onclick="reopenMerge()">🔀 Re-edit Merges</button>
+                <button class="btn btn-gray" onclick="reopenDuplicates()">🔁 Re-edit Duplicates</button>
+            </div>
+            <div class="download-grid" id="downloadGrid"></div>
+        </div>
+
+    </div>
+
+    <script>
+        const STEPS = ['poleTypo', 'spelling', 'mergeBarangay', 'mergeMunicipality', 'duplicates', 'sequence', 'address', 'downloads'];
+    
+        const STEP_SECTION = {
+            poleTypo:          'poleTypoSection',
+            spelling:          'spellingSection',
+            mergeBarangay:     'mergeBarangaySection',
+            mergeMunicipality: 'mergeMunicipalitySection',
+            duplicates:        'duplicatesSection',
+            sequence:          'sequenceSection',
+            address:           'addressSection',
+            downloads:         'downloadSection',
+        };
+    
+        let analyzedData  = null;
+        let currentStep   = null;
+    
+        function saveState(step) {
+            currentStep = step;
+            if (analyzedData) {
+                localStorage.setItem('cleanerData', JSON.stringify(analyzedData));
+            }
+            if (step) {
+                localStorage.setItem('cleanerStep', step);
+            } else {
+                localStorage.removeItem('cleanerStep');
+            }
+        }
+    
+        function goBack(fromStep) {
+            const idx = STEPS.indexOf(fromStep);
+            if (idx <= 0) return;
+    
+            hideAllSections();
+    
+            // Walk backwards to find a valid previous step
+            for (let i = idx - 1; i >= 0; i--) {
+                const prevStep = STEPS[i];
+                if (prevStep === 'poleTypo' && analyzedData && analyzedData.pole_typos && analyzedData.pole_typos.length > 0) {
+                    showSection(STEP_SECTION[prevStep]);
+                    renderPoleTypos(analyzedData.pole_typos);
+                    saveState(prevStep);
+                    return;
+                }
+                if (prevStep === 'spelling' && analyzedData && analyzedData.spelling_issues && analyzedData.spelling_issues.length > 0) {
+                    showSection(STEP_SECTION[prevStep]);
+                    renderSpelling(analyzedData.spelling_issues);
+                    saveState(prevStep);
+                    return;
+                }
+                if (prevStep === 'mergeBarangay') {
+                    showSection(STEP_SECTION[prevStep]);
+                    renderMergeRows('barangay', analyzedData.barangays, analyzedData.poles_by_barangay);
+                    saveState(prevStep);
+                    return;
+                }
+                if (prevStep === 'mergeMunicipality') {
+                    showSection(STEP_SECTION[prevStep]);
+                    renderMergeRows('municipality', analyzedData.municipalities, analyzedData.poles_by_municipality);
+                    saveState(prevStep);
+                    return;
+                }
+                if (prevStep === 'duplicates' && analyzedData && analyzedData.duplicates && analyzedData.duplicates.length > 0) {
+                    showSection(STEP_SECTION[prevStep]);
+                    renderDuplicatesTable(analyzedData.duplicates);
+                    saveState(prevStep);
+                    return;
+                }
+                if (prevStep === 'sequence') {
+                    showSection(STEP_SECTION[prevStep]);
+                    loadSequenceSection();
+                    saveState(prevStep);
+                return;
+                }
+                    if (prevStep === 'address') {
+                    showSection(STEP_SECTION[prevStep]);
+                    saveState(prevStep);
+                return;
+                }
+            }
+    
+            // Fallback: go to analysis
+            showSection('analysisSection');
+            saveState(null);
+        }
+    
+        window.addEventListener('beforeunload', function(e) {
+            if (analyzedData) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.nav-btn').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (analyzedData) {
+                        const confirm_leave = confirm(
+                            '⚠️ You have unsaved progress in the CSV Cleaner.\n\nAre you sure you want to leave? Your progress will be saved and restored when you come back.'
+                        );
+                        if (!confirm_leave) {
+                            e.preventDefault();
+                        }
+                    }
+                });
+            });
+        });
+    
+        function uploadNew() {
+            if (analyzedData) {
+                if (!confirm('Upload new CSV? Current progress will be lost.')) return;
+            }
+            analyzedData = null;
+            localStorage.removeItem('cleanerData');
+            localStorage.removeItem('cleanerStep');
+            fetch('/cleaner/reset', { method: 'POST' });
+            document.getElementById('csvFile').value = '';
+            hideAllSections();
+            document.getElementById('csvFile').click();
+        }
+    
+        function resetAll() {
+            if (!confirm('Reset everything? All progress will be lost.')) return;
+            analyzedData = null;
+            currentStep  = null;
+            localStorage.removeItem('cleanerData');
+            localStorage.removeItem('cleanerStep');
+            document.getElementById('csvFile').value = '';
+            hideAllSections();
+            document.getElementById('loadingUpload').style.display = 'none';
+    
+            // Reset address progress bar UI
+            const bar     = document.getElementById('addressBar');
+            const percent = document.getElementById('addressPercent');
+            const msg     = document.getElementById('addressMsg');
+            const prog    = document.getElementById('addressProgress');
+            const btn     = document.getElementById('resolveBtn');
+            if (bar)     bar.style.width   = '0%';
+            if (percent) percent.innerText = '0%';
+            if (msg)     msg.innerText     = 'Starting...';
+            if (prog)    prog.style.display = 'none';
+            if (btn)     btn.disabled      = false;
+            if (addressPollInterval) { clearInterval(addressPollInterval); addressPollInterval = null; }
+    
+            fetch('/cleaner/reset', { method: 'POST' });
+        }
+    
+        // Restore state on page load
+        window.addEventListener('load', () => {
+            const saved     = localStorage.getItem('cleanerData');
+            const savedStep = localStorage.getItem('cleanerStep');
+    
+            if (saved) {
+                try {
+                    analyzedData = JSON.parse(saved);
+                    if (!analyzedData) return;
+    
+                    fetch('/cleaner/restore', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(analyzedData)
+                    })
+                    .then(r => r.json())
+                    .then(result => {
+                        if (result.status !== 'ok') {
+                            localStorage.removeItem('cleanerData');
+                            localStorage.removeItem('cleanerStep');
+                            return;
+                        }
+    
+                        hideAllSections();
+                        showSection('analysisSection');
+                        renderStatGrid(analyzedData);
+    
+                        // Restore to saved step
+                        if (savedStep && STEPS.includes(savedStep)) {
+                            restoreStep(savedStep);
+                        } else {
+                            renderDownloads(analyzedData);
+                        }
+                    })
+                    .catch(() => {
+                        localStorage.removeItem('cleanerData');
+                        localStorage.removeItem('cleanerStep');
+                    });
+                } catch(e) {
+                    localStorage.removeItem('cleanerData');
+                    localStorage.removeItem('cleanerStep');
+                }
+            }
+        });
+    
+        function restoreStep(step) {
+            hideAllSections();
+            showSection('analysisSection');
+            renderStatGrid(analyzedData);
+    
+            switch(step) {
+                case 'poleTypo':
+                    if (analyzedData.pole_typos && analyzedData.pole_typos.length > 0) {
+                        showSection('poleTypoSection');
+                        renderPoleTypos(analyzedData.pole_typos);
+                    } else {
+                        restoreStep('spelling');
+                    }
+                    break;
+                case 'spelling':
+                    if (analyzedData.spelling_issues && analyzedData.spelling_issues.length > 0) {
+                        showSection('spellingSection');
+                        renderSpelling(analyzedData.spelling_issues);
+                    } else {
+                        restoreStep('mergeBarangay');
+                    }
+                    break;
+                case 'mergeBarangay':
+                    showSection('mergeBarangaySection');
+                    renderMergeRows('barangay', analyzedData.barangays, analyzedData.poles_by_barangay);
+                    break;
+                case 'mergeMunicipality':
+                    showSection('mergeMunicipalitySection');
+                    renderMergeRows('municipality', analyzedData.municipalities, analyzedData.poles_by_municipality);
+                    break;
+                case 'duplicates':
+                    if (analyzedData.duplicates && analyzedData.duplicates.length > 0) {
+                        showSection('duplicatesSection');
+                        renderDuplicatesTable(analyzedData.duplicates);
+                    } else {
+                        restoreStep('address');
+                    }
+                    break;
+                case 'sequence':
+                    showSection('sequenceSection');
+                    loadSequenceSection();
+                    break;
+                case 'address':
+                    showSection('addressSection');
+                    break;
+                case 'downloads':
+                    renderDownloads(analyzedData);
+                    break;
+                default:
+                    renderDownloads(analyzedData);
+            }
+        }
+    
+        function renderStatGrid(data) {
+            document.getElementById('statGrid').innerHTML = `
+                <div class="stat-box">
+                    <div class="number">${data.total_poles}</div>
+                    <div class="label">Total Poles</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" style="color:#dc3545">${data.duplicates ? data.duplicates.length : 0}</div>
+                    <div class="label">Possible Duplicates</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" style="color:#28a745">${data.poles ? data.poles.length : 0}</div>
+                    <div class="label">Clean Poles</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">${data.barangays ? data.barangays.length : 0}</div>
+                    <div class="label">Barangays</div>
+                </div>
+            `;
+        }
+    
+        function analyzeCSV() {
+            const file = document.getElementById('csvFile').files[0];
+            if (!file) { alert('Please select a CSV file first!'); return; }
+    
+            document.getElementById('loadingUpload').style.display = 'block';
+            hideAllSections();
+    
+            const formData = new FormData();
+            formData.append('csv_file', file);
+    
+            fetch('/cleaner/analyze', { method: 'POST', body: formData })
+                .then(r => r.json())
+                .then(data => {
+                    analyzedData = data;
+                    document.getElementById('loadingUpload').style.display = 'none';
+                    console.log('analyze result:', data);
+                    renderAnalysis(data);
+                })
+                .catch(err => {
+                    document.getElementById('loadingUpload').style.display = 'none';
+                    alert('Error analyzing CSV: ' + err);
+                });
+        }
+    
+        function hideAllSections() {
+            ['analysisSection', 'poleTypoSection', 'spellingSection',
+            'mergeBarangaySection', 'mergeMunicipalitySection',
+            'duplicatesSection', 'sequenceSection', 'addressSection', 'downloadSection']
+                .forEach(id => document.getElementById(id).classList.add('section-hidden'));
+        }
+    
+        function showSection(id) {
+            document.getElementById(id).classList.remove('section-hidden');
+        }
+    
+        function renderAnalysis(data) {
+            showSection('analysisSection');
+            document.getElementById('statGrid').innerHTML = `
+                <div class="stat-box">
+                    <div class="number">${data.total_poles ?? 0}</div>
+                    <div class="label">Total Poles</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" style="color:#dc3545">${(data.duplicates ?? []).length}</div>
+                    <div class="label">Possible Duplicates</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" style="color:#fd7e14">${(data.spelling_issues ?? []).length}</div>
+                    <div class="label">Spelling Issues</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" style="color:#28a745">${(data.poles ?? []).length}</div>
+                    <div class="label">Clean Poles</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">${(data.barangays ?? []).length}</div>
+                    <div class="label">Barangays</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number">${(data.municipalities ?? []).length}</div>
+                    <div class="label">Municipalities</div>
+                </div>
+            `;
+    
+            if (data.pole_typos && data.pole_typos.length > 0) {
+                showSection('poleTypoSection');
+                renderPoleTypos(data.pole_typos);
+                saveState('poleTypo');
+            } else if (data.spelling_issues.length > 0) {
+                showSection('spellingSection');
+                renderSpelling(data.spelling_issues);
+                saveState('spelling');
+            } else {
+                showMergeSection(data);
+            }
+        }
+    
+        function renderSpelling(issues) {
+            let html = '';
+            issues.forEach((issue, i) => {
+                html += `<div class="fix-row">
+                    <span>🔤 <b>${issue.field}:</b> "${issue.value}" (${issue.count} poles)</span>
+                    <select id="fix_${i}" onchange="checkCustom(${i})">
+                        ${issue.suggestions.map(s => `<option value="${s}">${s}</option>`).join('')}
+                        <option value="${issue.value}">Keep as is: "${issue.value}"</option>
+                        <option value="__custom__">✏️ Type custom...</option>
+                    </select>
+                    <input type="text" id="custom_${i}"
+                        placeholder="Type correct spelling..."
+                        style="display:none;">
+                </div>`;
+            });
+            document.getElementById('spellingFixes').innerHTML = html;
+        }
+    
+        function checkCustom(i) {
+            const select = document.getElementById(`fix_${i}`);
+            const custom = document.getElementById(`custom_${i}`);
+            custom.style.display = select.value === '__custom__' ? 'block' : 'none';
+        }
+    
+        function applyFixes() {
+            if (!analyzedData) return;
+            const fixes = [];
+            let hasError = false;
+    
+            analyzedData.spelling_issues.forEach((issue, i) => {
+                const select = document.getElementById(`fix_${i}`);
+                const custom = document.getElementById(`custom_${i}`);
+                let selected = select.value;
+    
+                if (selected === '__custom__') {
+                    selected = custom.value.trim();
+                    if (!selected) {
+                        alert(`Please type a correct spelling for "${issue.value}"`);
+                        hasError = true;
+                        return;
+                    }
+                }
+    
+                fixes.push({
+                    field:       issue.field,
+                    original:    issue.value,
+                    replacement: selected
+                });
+            });
+    
+            if (hasError) return;
+    
+            fetch('/cleaner/apply-fixes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fixes })
+            })
+            .then(r => r.json())
+            .then(data => {
+                analyzedData = data;
+                saveState('mergeBarangay');
+                document.getElementById('spellingSection').classList.add('section-hidden');
+                showMergeSection(data);
+            });
+        }
+    
+        function skipFixes() {
+            saveState('mergeBarangay');
+            document.getElementById('spellingSection').classList.add('section-hidden');
+            showMergeSection(analyzedData);
+        }
+    
+        function showMergeSection(data) {
+            renderMergeRows('barangay', data.barangays, data.poles_by_barangay);
+            showSection('mergeBarangaySection');
+            saveState('mergeBarangay');
+        }
+    
+        function renderMergeRows(field, groups, counts) {
+            const containerId = field === 'barangay' ? 'mergeBarangayRows' : 'mergeMunicipalityRows';
+
+            let html = `
+                <div style="margin-bottom:12px;">
+                    <input type="text"
+                        id="search_${field}"
+                        placeholder="🔍 Search ${field} name..."
+                        oninput="filterMergeRows('${field}')"
+                        style="width:100%; padding:8px 10px; border:1px solid #ccc; border-radius:6px; font-size:13px;">
+                </div>
+            `;
+
+            const letterGroups = {};
+            groups.forEach((group, i) => {
+                const letter = group.trim().charAt(0).toUpperCase();
+                if (!letterGroups[letter]) letterGroups[letter] = [];
+                letterGroups[letter].push({ group, i });
+            });
+
+            const sortedLetters = Object.keys(letterGroups).sort();
+
+            sortedLetters.forEach(letter => {
+                html += `<div class="merge-letter-header" style="
+                    font-size:13px; font-weight:bold; color:#fff;
+                    background:#2c3e50; padding:4px 10px; border-radius:4px;
+                    margin:12px 0 6px; letter-spacing:1px;">${letter}</div>`;
+
+                letterGroups[letter].forEach(({ group, i }) => {
+                    const count  = counts[group] || 0;
+                    const others = groups.filter(g => g !== group).sort((a, b) => a.localeCompare(b));
+
+                    // Municipality options for barangay reassignment
+                    const muniOptions = field === 'barangay'
+                        ? (analyzedData.municipalities || [])
+                        : [];
+
+                    // Find current municipality of this barangay
+                    const currentMuni = field === 'barangay'
+                        ? (() => {
+                            const pole = (analyzedData.poles || []).find(p => p.barangay === group);
+                            return pole ? pole.municipality : '';
+                          })()
+                        : '';
+
+                    const muniSelectHtml = field === 'barangay' ? `
+                        <div id="muni_wrap_${i}" style="margin-top:6px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                            <span style="font-size:12px; color:#666; white-space:nowrap;">📍 Municipality:</span>
+                            <select id="muni_override_${i}"
+                                style="flex:1; min-width:140px; padding:5px 8px; border:1.5px solid #ccc;
+                                       border-radius:6px; font-size:12px; margin-bottom:0;"
+                                onchange="onMuniOverrideChange(${i})">
+                                <option value="">Keep: ${currentMuni}</option>
+                                ${muniOptions.filter(m => m !== currentMuni).map(m =>
+                                    `<option value="${m}">Move to: ${m}</option>`
+                                ).join('')}
+                                <option value="__custom__">✏️ Type custom municipality...</option>
+                            </select>
+                            <input type="text"
+                                id="muni_custom_${i}"
+                                placeholder="Type municipality name..."
+                                style="display:none; flex:1; min-width:140px; padding:5px 8px;
+                                       border:1.5px solid #fd7e14; border-radius:6px; font-size:12px;"
+                                oninput="onMuniCustomInput(${i})">
+                        </div>` : '';
+
+                    html += `
+                    <div class="merge-row" id="merge_row_${field}_${i}" data-name="${group.toLowerCase()}">
+                        <span>
+                            <span class="count-badge">${count}</span>
+                            ${group}
+                            ${field === 'barangay' && currentMuni
+                                ? `<span style="font-size:11px; color:#888; font-weight:normal;
+                                    display:block; margin-top:2px;">📍 ${currentMuni}</span>`
+                                : ''}
+                        </span>
+                        <div class="merge-search-wrap">
+                            <input type="text"
+                                class="merge-search-input selected-keep"
+                                id="merge_input_${field}_${i}"
+                                placeholder="Keep as is — type to search..."
+                                autocomplete="off"
+                                data-field="${field}"
+                                data-index="${i}"
+                                data-group="${group}"
+                                data-others='${JSON.stringify(others)}'
+                                value=""
+                                oninput="onMergeSearch(this)"
+                                onfocus="onMergeFocus(this)"
+                                onblur="onMergeBlur(this)">
+                            <div class="merge-dropdown" id="merge_drop_${field}_${i}"></div>
+                            <input type="text"
+                                class="merge-custom-input"
+                                id="merge_custom_${field}_${i}"
+                                placeholder="Type the new name..."
+                                oninput="onMergeCustomInput('${field}', ${i})">
+                            ${muniSelectHtml}
+                        </div>
+                        <input type="hidden" id="merge_val_${field}_${i}" value="">
+                        <input type="hidden" id="merge_action_${field}_${i}" value="keep">
+                        <input type="hidden" id="merge_muni_${i}" value="">
+                    </div>`;
+                });
+            });
+
+            document.getElementById(containerId).innerHTML = html;
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('mousedown', function(e) {
+                document.querySelectorAll('.merge-dropdown.open').forEach(drop => {
+                    if (!drop.parentElement.contains(e.target)) {
+                        drop.classList.remove('open');
+                    }
+                });
+            }, { capture: true });
+        }
+
+        function highlightMatch(text, query) {
+            if (!query) return text;
+            const idx = text.toLowerCase().indexOf(query.toLowerCase());
+            if (idx === -1) return text;
+            return text.slice(0, idx) +
+                '<mark>' + text.slice(idx, idx + query.length) + '</mark>' +
+                text.slice(idx + query.length);
+        }
+
+        function buildMergeDropdown(field, i, query) {
+            const inp    = document.getElementById(`merge_input_${field}_${i}`);
+            const drop   = document.getElementById(`merge_drop_${field}_${i}`);
+            const others = JSON.parse(inp.dataset.others);
+            const group  = inp.dataset.group;
+
+            const filtered = query
+                ? others.filter(o => o.toLowerCase().includes(query.toLowerCase()))
+                : others;
+
+            let html = '';
+
+            // Keep as is — always show when no query
+            if (!query) {
+                html += `<div class="merge-option opt-keep"
+                    onmousedown="selectMergeOption('${field}', ${i}, 'keep', '', '— Keep as is')">
+                    <span>✖</span> Keep as is
+                </div>`;
+            }
+
+            // Rename option
+            if (!query || 'rename'.includes(query.toLowerCase())) {
+                html += `<div class="merge-option opt-rename"
+                    onmousedown="selectMergeOption('${field}', ${i}, 'rename', '', '✏️ Rename to...')">
+                    <span>✏️</span> Rename to...
+                </div>`;
+            }
+
+            // Merge into existing matches
+            filtered.forEach(o => {
+                const label = highlightMatch(o, query);
+                html += `<div class="merge-option opt-merge"
+                    onmousedown="selectMergeOption('${field}', ${i}, 'merge', '${o.replace(/'/g, "\\'")}', '→ ${o.replace(/'/g, "\\'")}')">
+                    <span>→</span> <span>${label}</span>
+                </div>`;
+            });
+
+            // Custom merge
+            if (!query) {
+                html += `<div class="merge-option opt-custom"
+                    onmousedown="selectMergeOption('${field}', ${i}, 'custom', '', '→ Merge into custom name...')">
+                    <span>✎</span> Merge into custom name...
+                </div>`;
+            }
+
+            drop.innerHTML = html || '<div class="merge-option" style="color:#aaa;">No matches</div>';
+            drop.classList.add('open');
+        }
+
+        function onMergeSearch(inp) {
+            const field = inp.dataset.field;
+            const i     = inp.dataset.index;
+            buildMergeDropdown(field, i, inp.value);
+        }
+
+        function onMergeFocus(inp) {
+            const field = inp.dataset.field;
+            const i     = inp.dataset.index;
+            buildMergeDropdown(field, i, inp.value);
+        }
+
+        function onMergeBlur(inp) {
+            // small delay so onmousedown on option fires first
+            setTimeout(() => {
+                const field = inp.dataset.field;
+                const i     = inp.dataset.index;
+                const drop  = document.getElementById(`merge_drop_${field}_${i}`);
+                if (drop) drop.classList.remove('open');
+            }, 150);
+        }
+
+        function selectMergeOption(field, i, action, value, label) {
+            const inp    = document.getElementById(`merge_input_${field}_${i}`);
+            const custom = document.getElementById(`merge_custom_${field}_${i}`);
+            const hidVal = document.getElementById(`merge_val_${field}_${i}`);
+            const hidAct = document.getElementById(`merge_action_${field}_${i}`);
+            const drop   = document.getElementById(`merge_drop_${field}_${i}`);
+
+            hidAct.value = action;
+            hidVal.value = value;
+            drop.classList.remove('open');
+
+            if (action === 'keep') {
+                inp.value = '';
+                inp.placeholder = 'Keep as is — type to search...';
+                inp.className = 'merge-search-input selected-keep';
+                custom.style.display = 'none';
+            } else if (action === 'merge') {
+                inp.value = '→ ' + value;
+                inp.className = 'merge-search-input selected-merge';
+                custom.style.display = 'none';
+            } else if (action === 'rename') {
+                inp.value = '✏️ Rename to...';
+                inp.className = 'merge-search-input selected-rename';
+                custom.style.display = 'block';
+                custom.placeholder = 'Type new name...';
+                custom.focus();
+            } else if (action === 'custom') {
+                inp.value = '→ Merge into custom name...';
+                inp.className = 'merge-search-input selected-merge';
+                custom.style.display = 'block';
+                custom.placeholder = 'Type destination name...';
+                custom.focus();
+            }
+        }
+
+        function onMergeCustomInput(field, i) {
+            const custom = document.getElementById(`merge_custom_${field}_${i}`);
+            const hidVal = document.getElementById(`merge_val_${field}_${i}`);
+            hidVal.value = custom.value.trim();
+        }
+
+        function onMuniOverrideChange(i) {
+            const sel    = document.getElementById(`muni_override_${i}`);
+            const custom = document.getElementById(`muni_custom_${i}`);
+            const hidden = document.getElementById(`merge_muni_${i}`);
+
+            if (sel.value === '__custom__') {
+                custom.style.display = 'block';
+                hidden.value = '';
+            } else {
+                custom.style.display = 'none';
+                hidden.value = sel.value;
+            }
+        }
+
+        function onMuniCustomInput(i) {
+            const custom = document.getElementById(`muni_custom_${i}`);
+            const hidden = document.getElementById(`merge_muni_${i}`);
+            hidden.value = custom.value.trim();
+        }
+    
+        function filterMergeRows(field) {
+            const search    = document.getElementById(`search_${field}`).value.toLowerCase();
+            const container = field === 'barangay' ?
+                document.getElementById('mergeBarangayRows') :
+                document.getElementById('mergeMunicipalityRows');
+    
+            const rows = container.querySelectorAll('.merge-row');
+            rows.forEach(row => {
+                const name = row.getAttribute('data-name') || '';
+                row.style.display = name.includes(search) ? 'flex' : 'none';
+            });
+        }
+    
+        function handleMergeChange(field, i) {
+            const sel = document.getElementById(`merge_${field}_${i}`);
+            const inp = document.getElementById(`merge_custom_${field}_${i}`);
+            const val = sel.value;
+    
+            if (val === '__custom__' || val.startsWith('rename::')) {
+                inp.style.display = 'block';
+                inp.placeholder   = val.startsWith('rename::') ? 'Type new name...' : 'Type destination name...';
+            } else {
+                inp.style.display = 'none';
+            }
+        }
+    
+        function applyMerge(field) {
+            const groups = field === 'barangay' ?
+                analyzedData.barangays : analyzedData.municipalities;
+
+            const merges = [];
+            groups.forEach((group, i) => {
+                const action = document.getElementById(`merge_action_${field}_${i}`)?.value || 'keep';
+                const val    = document.getElementById(`merge_val_${field}_${i}`)?.value || '';
+
+                if (action === 'keep') return;
+
+                const dest = val.trim();
+                if (!dest) return;
+                if (dest === group) return;
+
+                const muniOverride = document.getElementById(`merge_muni_${i}`)?.value || '';
+                merges.push({
+                    field,
+                    original:     group,
+                    replacement:  dest,
+                    municipality: muniOverride || undefined,
+                });
+            });
+
+            // Also collect barangays where only municipality changed (action = keep)
+            if (field === 'barangay') {
+                groups.forEach((group, i) => {
+                    const action       = document.getElementById(`merge_action_${field}_${i}`)?.value || 'keep';
+                    const muniOverride = document.getElementById(`merge_muni_${i}`)?.value || '';
+                    if (action === 'keep' && muniOverride) {
+                        merges.push({
+                            field,
+                            original:     group,
+                            replacement:  group,  // name stays same
+                            municipality: muniOverride,
+                        });
+                    }
+                });
+            }
+
+            if (merges.length === 0) {
+                skipMerge(field);
+                return;
+            }
+
+            fetch('/cleaner/apply-fixes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fixes: merges })
+            })
+            .then(r => r.json())
+            .then(data => {
+                analyzedData = data;
+                if (field === 'barangay') {
+                    document.getElementById('mergeBarangaySection').classList.add('section-hidden');
+                    renderMergeRows('municipality', data.municipalities, data.poles_by_municipality);
+                    showSection('mergeMunicipalitySection');
+                    saveState('mergeMunicipality');
+                } else {
+                    document.getElementById('mergeMunicipalitySection').classList.add('section-hidden');
+                    showDuplicates(data);
+                }
+            });
+        }
+    
+        function skipMerge(field) {
+            if (field === 'barangay') {
+                document.getElementById('mergeBarangaySection').classList.add('section-hidden');
+                renderMergeRows('municipality', analyzedData.municipalities, analyzedData.poles_by_municipality);
+                showSection('mergeMunicipalitySection');
+                saveState('mergeMunicipality');
+            } else {
+                document.getElementById('mergeMunicipalitySection').classList.add('section-hidden');
+                showDuplicates(analyzedData);
+            }
+        }
+    
+        function showDuplicates(data) {
+            if (data.duplicates && data.duplicates.length > 0) {
+                showSection('duplicatesSection');
+                renderDuplicatesTable(data.duplicates);
+                saveState('duplicates');
+            } else {
+                showSection('sequenceSection');
+                loadSequenceSection();
+                saveState('sequence');
+            }
+        }
+    
+        function renderDuplicatesTable(duplicates) {
+            // Track switch state: poleid -> true means user wants to switch
+            if (!window.dupSwitches) window.dupSwitches = {};
+
+            let html = `<table>
+                <tr>
+                    <th>Remove?</th>
+                    <th>Pole ID</th>
+                    <th>Pole Number</th>
+                    <th>Date</th>
+                    <th>Barangay</th>
+                    <th>Municipality</th>
+                    <th>Matched With</th>
+                    <th>Action</th>
+                </tr>`;
+
+            duplicates.forEach(row => {
+                const isSwitched    = window.dupSwitches[row.poleid] === true;
+                const autoSuggest   = row._suggest_switch && !isSwitched;
+                const rowBg         = autoSuggest
+                    ? 'background:#fff8e1;'
+                    : isSwitched
+                        ? 'background:#e8f5e9;'
+                        : '';
+
+                // If switched: original gets removed, duplicate gets kept
+                // checkbox reflects: checked = will be removed
+                const willBeRemoved = isSwitched
+                    ? false   // switched: duplicate is now kept
+                    : true;   // default: duplicate is removed
+
+                const switchLabel = isSwitched
+                    ? '↩️ Undo Switch'
+                    : '🔄 Switch Original';
+
+                const switchBtnColor = isSwitched
+                    ? '#6c757d'
+                    : autoSuggest ? '#fd7e14' : '#2c7be5';
+
+                const keepingLabel = isSwitched
+                    ? `<span class="badge badge-green">✅ This record will be KEPT</span>`
+                    : autoSuggest
+                        ? `<span class="badge badge-orange">⚠️ Suggest switching — original has weak pole number</span>`
+                        : '';
+
+                html += `<tr style="${rowBg}">
+                    <td>
+                        <input type="checkbox" class="dup-check" value="${row.poleid}"
+                            id="dup_cb_${row.poleid}"
+                            ${willBeRemoved && !isSwitched ? 'checked' : ''}
+                            ${isSwitched ? 'disabled' : ''}>
+                    </td>
+                    <td style="font-size:11px; color:#888;">${row.poleid}</td>
+                    <td>
+                        <input type="text"
+                            id="pole_edit_${row.poleid}"
+                            value="${row.pole_number || ''}"
+                            style="width:100px; padding:4px; border:1px solid #ccc; border-radius:4px; font-size:12px;">
+                        <button class="btn btn-green"
+                            style="padding:3px 8px; font-size:11px; margin-top:2px;"
+                            onclick="savePoleEdit('${row.poleid}')">
+                            💾 Save
+                        </button>
+                    </td>
+                    <td style="font-size:12px;">${row.created_at || ''}</td>
+                    <td style="font-size:12px;">${row.barangay || ''}</td>
+                    <td style="font-size:12px;">${row.municipality || ''}</td>
+                    <td>
+                        <span class="badge badge-orange" style="display:block; margin-bottom:4px;">
+                            Original: <b>${row._matched_pole_number || ''}</b> (${row._matched_date || ''})
+                        </span>
+                        <span class="badge badge-red">${row._matched_reason || ''}</span>
+                        <div style="margin-top:4px;">${keepingLabel}</div>
+                    </td>
+                    <td style="white-space:nowrap;">
+                        <button
+                            onclick="toggleDupSwitch('${row.poleid}', '${row._matched_with || ''}')"
+                            style="padding:4px 10px; font-size:12px; border:none; border-radius:4px;
+                                   background:${switchBtnColor}; color:white; cursor:pointer; font-weight:bold;">
+                            ${switchLabel}
+                        </button>
+                    </td>
+                </tr>`;
+            });
+
+            html += '</table>';
+            document.getElementById('duplicatesTable').innerHTML = html;
+        }
+
+        function toggleDupSwitch(dupPoleid, origPoleid) {
+            if (!window.dupSwitches) window.dupSwitches = {};
+
+            // Save all current checkbox states before re-render
+            const savedChecks = {};
+            document.querySelectorAll('.dup-check').forEach(cb => {
+                savedChecks[cb.value] = cb.checked;
+            });
+
+            if (window.dupSwitches[dupPoleid]) {
+                delete window.dupSwitches[dupPoleid];
+            } else {
+                window.dupSwitches[dupPoleid] = true;
+            }
+
+            // Re-render
+            renderDuplicatesTable(analyzedData.duplicates);
+
+            // Restore checkbox states after re-render
+            document.querySelectorAll('.dup-check').forEach(cb => {
+                if (savedChecks.hasOwnProperty(cb.value)) {
+                    cb.checked = savedChecks[cb.value];
+                }
+            });
+        }
+    
+        function selectAllDuplicates() {
+            document.querySelectorAll('.dup-check').forEach(cb => cb.checked = true);
+        }
+    
+        function selectNoneDuplicates() {
+            document.querySelectorAll('.dup-check').forEach(cb => cb.checked = false);
+        }
+    
+        function confirmDuplicates() {
+            if (!window.dupSwitches) window.dupSwitches = {};
+
+            const checked = [...document.querySelectorAll('.dup-check:checked')]
+                .map(cb => cb.value);
+
+            // Build switches payload: for each switched pair,
+            // remove the original, keep the duplicate
+            const switches = Object.keys(window.dupSwitches).map(dupPoleid => {
+                const dup = analyzedData.duplicates.find(d => d.poleid == dupPoleid);
+                return {
+                    remove_poleid: dup ? (dup._matched_with || '') : '',
+                    keep_poleid:   dupPoleid,
+                };
+            }).filter(s => s.remove_poleid);
+
+            if (checked.length > 0 || switches.length > 0) {
+                const total = checked.length + switches.length;
+                if (!confirm(`This will remove ${total} record(s). Continue?`)) return;
+            }
+
+            fetch('/cleaner/confirm-duplicates', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ poleids: checked, switches })
+            })
+            .then(r => r.json())
+            .then(data => {
+                analyzedData = data;
+                window.dupSwitches = {};
+                document.getElementById('duplicatesSection').classList.add('section-hidden');
+                showSection('sequenceSection');
+                loadSequenceSection();
+                saveState('sequence');
+            })
+            .catch(err => {
+                alert('Error: ' + err);
+            });
+        }
+    
+        function renderDownloads(data) {
+            showSection('downloadSection');
+            saveState('downloads');
+
+            let html = `
+                <div class="download-card">
+                    <div class="count">${data.poles.length}</div>
+                    <p>All Clean Poles (Sorted by Date)</p>
+                    <button class="btn btn-green" onclick="downloadCSV('all')">⬇️ Download All</button>
+                </div>
+            `;
+
+            data.barangays.forEach(b => {
+                const count = data.poles_by_barangay[b] || 0;
+                html += `
+                <div class="download-card">
+                    <div class="count">${count}</div>
+                    <p>${b}</p>
+                    <button class="btn" onclick="downloadCSV('barangay', '${b}')">⬇️ Download</button>
+                </div>`;
+            });
+
+            data.municipalities.forEach(m => {
+                const count  = data.poles_by_municipality[m] || 0;
+                const mid    = m.replace(/[^a-zA-Z0-9]/g, '_');
+                html += `
+                <div class="download-card">
+                    <div class="count">${count}</div>
+                    <p><b>${m}</b></p>
+                    <div style="margin-bottom:8px; display:flex; justify-content:center; gap:6px; flex-wrap:wrap;">
+                        <button
+                            id="muni_split_${mid}"
+                            onclick="setMuniMode('${mid}', true)"
+                            style="padding:4px 10px; font-size:11px; font-weight:bold; border-radius:4px;
+                                   border:1.5px solid #2c7be5; background:#2c7be5; color:white; cursor:pointer;">
+                            📁 By Barangay
+                        </button>
+                        <button
+                            id="muni_single_${mid}"
+                            onclick="setMuniMode('${mid}', false)"
+                            style="padding:4px 10px; font-size:11px; font-weight:bold; border-radius:4px;
+                                   border:1.5px solid #ccc; background:#f0f4f8; color:#2c3e50; cursor:pointer;">
+                            📄 Single CSV
+                        </button>
+                    </div>
+                    <button class="btn btn-green"
+                        onclick="downloadMuni('${m}', '${mid}')">⬇️ Download</button>
+                </div>`;
+            });
+
+            document.getElementById('downloadGrid').innerHTML = html;
+        }
+
+        // Track municipality download mode: mid -> true (split) or false (single)
+        const muniModes = {};
+
+        function setMuniMode(mid, split) {
+            muniModes[mid] = split;
+            const splitBtn  = document.getElementById(`muni_split_${mid}`);
+            const singleBtn = document.getElementById(`muni_single_${mid}`);
+            if (split) {
+                splitBtn.style.background    = '#2c7be5';
+                splitBtn.style.color         = 'white';
+                splitBtn.style.borderColor   = '#2c7be5';
+                singleBtn.style.background   = '#f0f4f8';
+                singleBtn.style.color        = '#2c3e50';
+                singleBtn.style.borderColor  = '#ccc';
+            } else {
+                singleBtn.style.background   = '#2c7be5';
+                singleBtn.style.color        = 'white';
+                singleBtn.style.borderColor  = '#2c7be5';
+                splitBtn.style.background    = '#f0f4f8';
+                splitBtn.style.color         = '#2c3e50';
+                splitBtn.style.borderColor   = '#ccc';
+            }
+        }
+
+        function downloadMuni(municipalityName, mid) {
+            const split = muniModes[mid] !== false; // default is split=true
+            const url   = `/cleaner/download?type=municipality&value=${encodeURIComponent(municipalityName)}&split=${split}`;
+            window.location.href = url;
+        }
+    
+        function reopenSpelling() {
+            if (!analyzedData || !analyzedData.spelling_issues) return;
+            showSection('spellingSection');
+            renderSpelling(analyzedData.spelling_issues);
+            saveState('spelling');
+            document.getElementById('downloadSection').classList.add('section-hidden');
+        }
+    
+        function reopenMerge() {
+            if (!analyzedData) return;
+            renderMergeRows('barangay', analyzedData.barangays, analyzedData.poles_by_barangay);
+            showSection('mergeBarangaySection');
+            saveState('mergeBarangay');
+            document.getElementById('downloadSection').classList.add('section-hidden');
+        }
+    
+        function reopenDuplicates() {
+            if (!analyzedData || !analyzedData.duplicates) return;
+            showSection('duplicatesSection');
+            renderDuplicatesTable(analyzedData.duplicates);
+            saveState('duplicates');
+            document.getElementById('downloadSection').classList.add('section-hidden');
+        }
+    
+        function downloadCSV(type, value = '') {
+            let url = `/cleaner/download?type=${type}`;
+            if (value) url += `&value=${encodeURIComponent(value)}`;
+            window.location.href = url;
+        }
+    
+        function downloadKML() {
+            window.location.href = '/cleaner/download-kml';
+        }
+    
+        let addressPollInterval = null;
+    
+        function resolveAddresses() {
+            document.getElementById('resolveBtn').disabled = true;
+            document.getElementById('addressProgress').style.display = 'block';
+    
+            fetch('/cleaner/resolve-addresses', { method: 'POST' })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.status === 'started') {
+                        addressPollInterval = setInterval(pollAddressProgress, 1500);
+                    }
+                })
+                .catch(err => {
+                    alert('Error starting address resolution: ' + err);
+                    document.getElementById('resolveBtn').disabled = false;
+                });
+        }
+    
+        function pollAddressProgress() {
+            fetch('/cleaner/address-progress')
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('addressBar').style.width   = data.percent + '%';
+                    document.getElementById('addressPercent').innerText = data.percent + '%';
+                    document.getElementById('addressMsg').innerText     = data.message;
+    
+                    if (data.done) {
+                        clearInterval(addressPollInterval);
+                        addressPollInterval = null;
+    
+                        if (data.result) {
+                            analyzedData = { ...analyzedData, ...data.result };
+                            document.getElementById('addressMsg').innerText = '✅ Done!';
+                            setTimeout(() => {
+                                document.getElementById('addressSection').classList.add('section-hidden');
+                                renderDownloads(analyzedData);
+                            }, 1000);
+                        } else {
+                            document.getElementById('addressMsg').innerText = '❌ Error occurred!';
+                            document.getElementById('resolveBtn').disabled = false;
+                        }
+                    }
+                });
+        }
+    
+        function skipAddresses() {
+            document.getElementById('addressSection').classList.add('section-hidden');
+            renderDownloads(analyzedData);
+        }
+    
+        function renderPoleTypos(typos) {
+            let html = '';
+            typos.forEach((typo, i) => {
+                html += `<div class="fix-row">
+                    <span>🔢 <b>"${typo.original}"</b> (${typo.count} poles) — looks like <b>${typo.similar_to}</b></span>
+                    <select id="pole_fix_${i}">
+                        <option value="${typo.similar_to}">Change to: ${typo.similar_to}</option>
+                        <option value="__custom__">✏️ Type custom...</option>
+                        <option value="Keep as entered">Keep as entered: "${typo.original}"</option>
+                    </select>
+                    <input type="text" id="pole_custom_${i}"
+                        placeholder="Type correct value..."
+                        style="display:none;">
+                </div>`;
+            });
+            document.getElementById('poleTypoFixes').innerHTML = html;
+    
+            typos.forEach((typo, i) => {
+                const sel = document.getElementById(`pole_fix_${i}`);
+                const inp = document.getElementById(`pole_custom_${i}`);
+                sel.onchange = () => {
+                    inp.style.display = sel.value === '__custom__' ? 'block' : 'none';
+                };
+            });
+        }
+    
+        function applyPoleTypoFixes() {
+            if (!analyzedData || !analyzedData.pole_typos) return;
+            const fixes = [];
+    
+            analyzedData.pole_typos.forEach((typo, i) => {
+                const sel = document.getElementById(`pole_fix_${i}`);
+                const inp = document.getElementById(`pole_custom_${i}`);
+                let selected = sel.value;
+    
+                if (selected === '__custom__') {
+                    selected = inp.value.trim();
+                    if (!selected) {
+                        alert(`Please type a correct value for "${typo.original}"`);
+                        return;
+                    }
+                }
+    
+                fixes.push({ original: typo.original, replacement: selected });
+            });
+    
+            fetch('/cleaner/fix-pole-typos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fixes })
+            })
+            .then(r => r.json())
+            .then(data => {
+                analyzedData = data;
+                document.getElementById('poleTypoSection').classList.add('section-hidden');
+                if (data.spelling_issues && data.spelling_issues.length > 0) {
+                    showSection('spellingSection');
+                    renderSpelling(data.spelling_issues);
+                    saveState('spelling');
+                } else {
+                    showMergeSection(data);
+                }
+            });
+        }
+    
+        function skipPoleTypos() {
+            document.getElementById('poleTypoSection').classList.add('section-hidden');
+            if (analyzedData.spelling_issues && analyzedData.spelling_issues.length > 0) {
+                showSection('spellingSection');
+                renderSpelling(analyzedData.spelling_issues);
+                saveState('spelling');
+            } else {
+                showMergeSection(analyzedData);
+            }
+        }
+    
+        function savePoleEdit(poleid) {
+            console.log('savePoleEdit called for:', poleid);
+            const input    = document.getElementById(`pole_edit_${poleid}`);
+            const newValue = input.value.trim();
+            // Find the current pole number from analyzedData duplicates
+            const dup = analyzedData.duplicates.find(d => d.poleid == poleid);
+            if (!dup) { alert('Pole not found!'); return; }
+            const originalPoleNumber = dup.pole_number;
+
+            if (!newValue) { alert('Pole number cannot be empty!'); return; }
+            if (newValue === originalPoleNumber) { alert('No change detected!'); return; }
+
+            fetch('/cleaner/fix-pole-typos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ poleid: poleid, fixes: [{ original: originalPoleNumber, replacement: newValue }] })
+            })
+            .then(r => r.json())
+            .then(data => {
+                analyzedData = data;
+                saveState('duplicates');
+                if (data.duplicates && data.duplicates.length > 0) {
+                    renderDuplicatesTable(data.duplicates);
+                    const cb = document.querySelector(`.dup-check[value="${poleid}"]`);
+                    if (cb) cb.checked = false;
+                } else {
+                    document.getElementById('duplicatesSection').classList.add('section-hidden');
+                    showSection('sequenceSection');
+                    loadSequenceSection();
+                    saveState('sequence');
+                }
+            });
+        }
+        // ── Sequence Organizer ───────────────────────────────────────────────
+
+        let sequenceRows = [];
+        let dragSrcIndex = null;
+
+        function loadSequenceSection() {
+            fetch('/cleaner/get-sequence')
+                .then(r => r.json())
+                .then(data => {
+                    sequenceRows = data.map(p => ({
+                        poleid:      p.poleid       || '',
+                        pole_number: p.pole_number  || '',
+                        item_number: p._item_number,
+                        remarks:     p._rest_of_remarks || p.remarks || '',
+                    }));
+                    buildSequenceTable();
+                });
+        }
+
+        // Build the full table once — after that only update rows in place
+        function buildSequenceTable() {
+            const tbody = document.getElementById('sequenceBody');
+            checkDuplicateItemNumbers();
+            document.getElementById('sequenceCount').innerText = `${sequenceRows.length} pole(s)`;
+
+            let html = '';
+            sequenceRows.forEach((row, i) => {
+                html += buildRowHtml(row, i);
+            });
+            tbody.innerHTML = html;
+            applySearchFilter();
+            attachDragEvents();
+        }
+
+        function buildRowHtml(row, i) {
+            const numVal = (row.item_number !== null && row.item_number !== undefined)
+                ? row.item_number : '';
+            return `<tr id="seq_row_${i}" draggable="true"
+                style="border-bottom:1px solid #eee; cursor:grab;">
+                <td style="padding:6px 8px; vertical-align:middle;">
+                    <input type="number" min="1"
+                        id="seq_num_${i}"
+                        value="${numVal}"
+                        placeholder="—"
+                        oninput="seqNumInput(${i})"
+                        onkeydown="seqNumKeydown(event, ${i})"
+                        style="width:54px; padding:4px 6px; border:1px solid #ccc;
+                               border-radius:4px; font-size:13px; text-align:center;">
+                </td>
+                <td style="padding:6px 8px; vertical-align:middle; color:#555; font-size:12px;">
+                    ${row.pole_number || '<span style="color:#aaa;">—</span>'}
+                </td>
+                <td style="padding:6px 8px; vertical-align:middle;">
+                    <input type="text"
+                        id="seq_rem_${i}"
+                        value="${escapeAttr(row.remarks)}"
+                        oninput="seqRemInput(${i})"
+                        style="width:100%; padding:4px 6px; border:1px solid #ccc;
+                               border-radius:4px; font-size:13px; box-sizing:border-box;">
+                </td>
+                <td style="padding:6px 8px; vertical-align:middle; white-space:nowrap;">
+                    <button onclick="seqMoveUp(${i})" title="Move Up"
+                        style="padding:3px 7px; font-size:12px; margin-right:2px;
+                               background:#e9ecef; border:1px solid #ccc; border-radius:4px; cursor:pointer;">▲</button>
+                    <button onclick="seqMoveDown(${i})" title="Move Down"
+                        style="padding:3px 7px; font-size:12px; margin-right:2px;
+                               background:#e9ecef; border:1px solid #ccc; border-radius:4px; cursor:pointer;">▼</button>
+                    <button onclick="seqDelete(${i})" title="Delete"
+                        style="padding:3px 7px; font-size:12px;
+                               background:#fde8e8; border:1px solid #dc3545;
+                               border-radius:4px; cursor:pointer; color:#dc3545;">✕</button>
+                </td>
+            </tr>`;
+        }
+
+        // Attach drag events after every table build
+        function attachDragEvents() {
+            const tbody = document.getElementById('sequenceBody');
+            tbody.querySelectorAll('tr[draggable]').forEach(tr => {
+                const i = parseInt(tr.id.replace('seq_row_', ''));
+
+                tr.addEventListener('dragstart', e => {
+                    dragSrcIndex = i;
+                    e.dataTransfer.effectAllowed = 'move';
+                    tr.style.opacity = '0.4';
+                });
+
+                tr.addEventListener('dragend', e => {
+                    tr.style.opacity = '1';
+                    tbody.querySelectorAll('tr').forEach(r => r.classList.remove('drag-over'));
+                });
+
+                tr.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    tbody.querySelectorAll('tr').forEach(r => r.classList.remove('drag-over'));
+                    tr.classList.add('drag-over');
+                });
+
+                tr.addEventListener('drop', e => {
+                    e.preventDefault();
+                    const destIndex = parseInt(tr.id.replace('seq_row_', ''));
+                    if (dragSrcIndex === null || dragSrcIndex === destIndex) return;
+                    flushSequenceEdits();
+                    const moved = sequenceRows.splice(dragSrcIndex, 1)[0];
+                    sequenceRows.splice(destIndex, 0, moved);
+                    dragSrcIndex = null;
+                    buildSequenceTable();
+                });
+            });
+        }
+
+        // Add drag-over style
+        const dragStyle = document.createElement('style');
+        dragStyle.textContent = `tr.drag-over td { background: #e8f4fd !important; }`;
+        document.head.appendChild(dragStyle);
+
+        function applySearchFilter() {
+            const searchVal = (document.getElementById('seqSearch')?.value || '').toLowerCase();
+            if (!searchVal) {
+                document.querySelectorAll('#sequenceBody tr').forEach(tr => tr.style.display = '');
+                return;
+            }
+            sequenceRows.forEach((row, i) => {
+                const tr = document.getElementById(`seq_row_${i}`);
+                if (!tr) return;
+                const matches =
+                    String(row.item_number ?? '').includes(searchVal) ||
+                    (row.pole_number || '').toLowerCase().includes(searchVal) ||
+                    (row.remarks     || '').toLowerCase().includes(searchVal);
+                tr.style.display = matches ? '' : 'none';
+            });
+        }
+
+        function renderSequenceTable() {
+            // Called by search input — just reapply filter without rebuilding
+            applySearchFilter();
+        }
+
+        function escapeAttr(str) {
+            return (str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        // Live input handlers — update data WITHOUT rebuilding the table
+        function seqNumInput(i) {
+            const val = document.getElementById(`seq_num_${i}`).value.trim();
+            sequenceRows[i].item_number = val !== '' ? parseInt(val) : null;
+            checkDuplicateItemNumbers();
+        }
+
+        function seqRemInput(i) {
+            sequenceRows[i].remarks = document.getElementById(`seq_rem_${i}`).value;
+        }
+
+        function seqNumKeydown(event, i) {
+            if (event.key !== 'Enter') return;
+            event.preventDefault();
+
+            // Make sure current value is saved
+            const val = document.getElementById(`seq_num_${i}`)?.value.trim() || '';
+            sequenceRows[i].item_number = val !== '' ? parseInt(val) : null;
+            const newNum = sequenceRows[i].item_number;
+
+            // Find target: row with item_number === newNum + 1
+            let targetIndex = -1;
+            if (newNum !== null) {
+                targetIndex = sequenceRows.findIndex(
+                    (r, idx) => idx !== i && r.item_number === newNum + 1
+                );
+            }
+
+            // Fallback: next visible row
+            if (targetIndex === -1) {
+                const visible = [...document.querySelectorAll('#sequenceBody tr')]
+                    .filter(tr => tr.style.display !== 'none')
+                    .map(tr => parseInt(tr.id.replace('seq_row_', '')));
+                const pos = visible.indexOf(i);
+                if (pos !== -1 && pos + 1 < visible.length) {
+                    targetIndex = visible[pos + 1];
+                }
+            }
+
+            if (targetIndex !== -1) {
+                const nextInput = document.getElementById(`seq_num_${targetIndex}`);
+                if (nextInput) {
+                    nextInput.focus();
+                    nextInput.select();
+                    nextInput.closest('tr')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+
+            checkDuplicateItemNumbers();
+        }
+
+        function seqMoveUp(i) {
+            if (i === 0) return;
+            flushSequenceEdits();
+            [sequenceRows[i - 1], sequenceRows[i]] = [sequenceRows[i], sequenceRows[i - 1]];
+            buildSequenceTable();
+        }
+
+        function seqMoveDown(i) {
+            if (i === sequenceRows.length - 1) return;
+            flushSequenceEdits();
+            [sequenceRows[i], sequenceRows[i + 1]] = [sequenceRows[i + 1], sequenceRows[i]];
+            buildSequenceTable();
+        }
+
+        function seqDelete(i) {
+            if (!confirm(`Remove "${sequenceRows[i].pole_number || 'this pole'}" from the sequence?`)) return;
+            flushSequenceEdits();
+            sequenceRows.splice(i, 1);
+            buildSequenceTable();
+        }
+
+        function addSequenceRow() {
+            flushSequenceEdits();
+            sequenceRows.push({
+                poleid:      '',
+                pole_number: '',
+                item_number: null,
+                remarks:     '',
+            });
+            buildSequenceTable();
+            const tbody = document.getElementById('sequenceBody');
+            tbody.lastElementChild?.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function flushSequenceEdits() {
+            sequenceRows.forEach((row, i) => {
+                const numEl = document.getElementById(`seq_num_${i}`);
+                const remEl = document.getElementById(`seq_rem_${i}`);
+                if (numEl) {
+                    const v = numEl.value.trim();
+                    row.item_number = v !== '' ? parseInt(v) : null;
+                }
+                if (remEl) row.remarks = remEl.value;
+            });
+        }
+
+        function checkDuplicateItemNumbers() {
+            const nums = sequenceRows
+                .map(r => r.item_number)
+                .filter(n => n !== null && n !== undefined);
+            const hasDup = nums.length !== new Set(nums).size;
+            document.getElementById('sequenceDupWarning').style.display = hasDup ? 'block' : 'none';
+            return hasDup;
+        }
+
+        function renumberSequence() {
+            flushSequenceEdits();
+            let counter = 1;
+            sequenceRows.forEach(row => { row.item_number = counter++; });
+            buildSequenceTable();
+        }
+
+        function autoFixSequence() {
+            renumberSequence();
+        }
+
+        function buildFinalRemarks(item_number, remarks) {
+            const clean = (remarks || '').trim();
+            if (item_number !== null && item_number !== undefined) {
+                return clean ? `#${item_number} ${clean}` : `#${item_number}`;
+            }
+            return clean;
+        }
+
+        function saveSequence() {
+            flushSequenceEdits();
+            if (checkDuplicateItemNumbers()) {
+                if (!confirm('There are duplicate item numbers. Save anyway?')) return;
+            }
+            const payload = sequenceRows.map(row => ({
+                poleid:  row.poleid,
+                remarks: buildFinalRemarks(row.item_number, row.remarks),
+            }));
+            fetch('/cleaner/apply-sequence', {
+                method:  'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body:    JSON.stringify({ sequence: payload }),
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.poles) {
+                    analyzedData.poles       = data.poles;
+                    analyzedData.clean_poles = data.poles;
+                    Object.assign(analyzedData, data);
+                }
+                saveState('address');
+                document.getElementById('sequenceSection').classList.add('section-hidden');
+                showSection('addressSection');
+            });
+        }
+
+        function skipSequence() {
+            document.getElementById('sequenceSection').classList.add('section-hidden');
+            showSection('addressSection');
+            saveState('address');
+        }
+
+
+    </script>
+
+</body>
+</html>

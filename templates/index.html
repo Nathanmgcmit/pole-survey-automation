@@ -5,21 +5,121 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pole Survey Report Generator</title>
     <style>
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.2s ease, border-color 0.2s ease,
+                        box-shadow 0.2s ease, opacity 0.2s ease,
+                        transform 0.15s ease, color 0.2s ease;
+        }
+
+        .btn:active, button:active {
+            transform: scale(0.97);
+            opacity: 0.88;
+        }
+
+        .card {
+            transition: box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 6px 28px rgba(100,160,255,0.16), 0 2px 6px rgba(0,0,0,0.07);
+            border-color: rgba(100,170,255,0.75);
+        }
+
+        .nav-btn {
+            transition: background-color 0.2s ease, transform 0.15s ease;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .nav-btn:active {
+            transform: scale(0.97);
+        }
+
+        .btn-reset {
+            width: 100%;
+            padding: 10px;
+            background-color: #6c757d;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        .btn-reset:hover {
+            background-color: #545b62;
+        }
+
         body {
             font-family: Calibri, sans-serif;
-            background-color: #f0f4f8;
+            min-height: 100vh;
+            padding-top: 70px;
+            background-color: #ffffff;
+            background-image:
+                radial-gradient(ellipse 60% 40% at 0% 0%, rgba(100,180,255,0.28) 0%, transparent 65%),
+                radial-gradient(ellipse 60% 40% at 100% 0%, rgba(120,160,255,0.22) 0%, transparent 65%),
+                radial-gradient(ellipse 60% 40% at 0% 100%, rgba(140,180,255,0.20) 0%, transparent 65%),
+                radial-gradient(ellipse 60% 40% at 100% 100%, rgba(100,200,255,0.22) 0%, transparent 65%),
+                radial-gradient(ellipse 40% 30% at 50% 0%, rgba(120,190,255,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 30% at 50% 100%, rgba(120,190,255,0.15) 0%, transparent 60%);
+            background-attachment: fixed;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            padding: 16px;
+            background: linear-gradient(135deg, #1a2a3a 0%, #2c3e50 60%, #2c7be5 100%);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(44,123,229,0.18);
+        }
+
+        .nav-btn {
+            padding: 10px 24px;
+            background-color: #3d5166;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .nav-btn:hover {
+            background-color: #2c7be5;
+        }
+
+        .nav-btn.active {
+            background-color: #2c7be5;
+        }
+
+        .page {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
+            min-height: calc(100vh - 70px);
+            padding: 20px;
         }
 
+
         .container {
-            background-color: white;
+            background: rgba(255,255,255,0.96);
             padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 14px;
+            box-shadow: 0 4px 32px rgba(100,160,255,0.13), 0 1px 4px rgba(0,0,0,0.05);
+            border: 1.5px solid rgba(100,170,255,0.55);
             width: 480px;
         }
 
@@ -33,9 +133,42 @@
         label {
             font-size: 13px;
             font-weight: bold;
-            color: #444;
+            color: #2c3e50;
             display: block;
             margin-bottom: 4px;
+        }
+
+        .toggle-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .toggle-group label {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: #f0f4f8;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 13px;
+            font-weight: normal;
+            color: #2c3e50;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+        }
+
+        .toggle-group input[type="radio"] {
+            accent-color: #2c7be5;
+        }
+
+        .toggle-group label:has(input:checked) {
+            background: #2c7be5;
+            border-color: #2c7be5;
+            color: white;
+            font-weight: bold;
         }
 
         input[type="text"],
@@ -46,7 +179,6 @@
             border: 1px solid #ccc;
             border-radius: 6px;
             font-size: 13px;
-            box-sizing: border-box;
         }
 
         button {
@@ -67,49 +199,140 @@
 
         .loading {
             display: none;
-            text-align: center;
             margin-top: 16px;
+        }
+
+        .loading p {
+            text-align: center;
             font-size: 13px;
             color: #888;
+            margin-bottom: 8px;
+        }
+
+        #progressBar {
+            height: 24px;
+            width: 0%;
+            background: #2c7be5;
+            transition: width 0.4s;
+            border-radius: 8px;
+        }
+
+        .progress-track {
+            background: #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        #progressPercent {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c7be5;
+            margin-top: 8px;
+        }
+
+        .mode-btn {
+            padding: 5px 12px;
+            font-size: 12px;
+            font-weight: bold;
+            border: 1.5px solid #ccc;
+            border-radius: 6px;
+            background: #f0f4f8;
+            color: #2c3e50;
+            cursor: pointer;
+            width: auto;
+            margin-bottom: 6px;
+            transition: background 0.15s, color 0.15s, border-color 0.15s;
+        }
+
+        .mode-btn:hover {
+            background: #dce8fa;
+            border-color: #2c7be5;
+            color: #2c3e50;
+        }
+
+        .active-mode {
+            background: #2c7be5;
+            color: #ffffff;
+            border-color: #2c7be5;
+            box-shadow: 0 2px 8px rgba(44,123,229,0.18);
+        }
+
+        .active-mode:hover {
+            background: #1a5fb4;
+            color: #ffffff;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>📋 Pole Survey Report Generator</h1>
 
-        <form action="/generate" method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
-            <label>PROJECT NAME</label>
-            <input type="text" name="project_name" placeholder="e.g. NEXLOGIC" required>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+        <a href="/" class="nav-btn active">📋 Report Generator</a>
+        <a href="/cleaner" class="nav-btn">🧹 CSV Cleaner</a>
+    </div>
 
-            <label>SITE NAME</label>
-            <input type="text" name="site_name" placeholder="e.g. Valenzuela Pole Site" required>
+    <div class="page">
+        <div class="container">
+            <h1>📋 Pole Survey Report Generator</h1>
 
-            <label>ADDRESS</label>
-            <input type="text" name="address" placeholder="e.g. ALONG FORTUNE" required>
+            <form action="/generate" method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
 
-            <label>DATE TAKEN</label>
-            <input type="text" name="date_taken" placeholder="e.g. MAY 22, 2026" required>
+                <label>PROJECT NAME</label>
+                <input type="text" name="project_name" placeholder="e.g. NEXLOGIC" required>
 
-            <label>SURVEY NAME (for sheet tabs)</label>
-            <input type="text" name="survey_name" placeholder="e.g. FORTUNE" required>
+                <label>SITE NAME</label>
+                <input type="text" name="site_name" placeholder="e.g. Valenzuela Pole Site" required>
 
-            <label>UPLOAD CSV FILE</label>
-            <input type="file" name="csv_file" accept=".csv" required>
+                <label>ADDRESS</label>
+                <div style="display:flex; gap:8px; margin-bottom:4px;">
+                    <button type="button" onclick="setMode('address','manual')" id="address_manual_btn" class="mode-btn active-mode">✏️ Manual</button>
+                    <button type="button" onclick="setMode('address','auto')" id="address_auto_btn" class="mode-btn">🔄 Auto from CSV</button>
+                </div>
+                <input type="text" name="address" id="address_input" placeholder="e.g. ALONG FORTUNE">
+                <input type="hidden" name="address_mode" id="address_mode" value="manual">
 
-            <button type="submit">⚙️ Generate Report</button>
-        </form>
+                <label>DATE TAKEN</label>
+                <div style="display:flex; gap:8px; margin-bottom:4px;">
+                    <button type="button" onclick="setMode('date_taken','manual')" id="date_taken_manual_btn" class="mode-btn active-mode">✏️ Manual</button>
+                    <button type="button" onclick="setMode('date_taken','auto')" id="date_taken_auto_btn" class="mode-btn">🔄 Auto from CSV</button>
+                </div>
+                <input type="text" name="date_taken" id="date_taken_input" placeholder="e.g. MAY 22, 2026">
+                <input type="hidden" name="date_taken_mode" id="date_taken_mode" value="manual">
 
-        <div class="loading" id="loadingSection">
-            <p id="loadingMsg">⏳ Starting...</p>
-            <div style="background:#e0e0e0; border-radius:8px; overflow:hidden; margin-top:8px;">
-                <div id="progressBar" style="height:24px; width:0%; background:#2c7be5; transition:width 0.4s; border-radius:8px;"></div>
+                <label>SURVEY NAME (for sheet tabs)</label>
+                <div style="display:flex; gap:8px; margin-bottom:4px;">
+                    <button type="button" onclick="setMode('survey_name','manual')" id="survey_name_manual_btn" class="mode-btn active-mode">✏️ Manual</button>
+                    <button type="button" onclick="setMode('survey_name','auto')" id="survey_name_auto_btn" class="mode-btn">🔄 Auto from CSV</button>
+                </div>
+                <input type="text" name="survey_name" id="survey_name_input" placeholder="e.g. FORTUNE">
+                <input type="hidden" name="survey_name_mode" id="survey_name_mode" value="manual">
+
+                <label>UPLOAD CSV FILE</label>
+                <input type="file" name="csv_file" accept=".csv" required>
+
+                <button type="submit">⚙️ Generate Report</button>
+                <button type="button" class="btn-reset" onclick="resetForm()">🔄 Reset</button>
+            </form>
+
+            <div class="loading" id="loadingSection">
+                <p id="loadingMsg">⏳ Starting...</p>
+                <div class="progress-track">
+                    <div id="progressBar"></div>
+                </div>
+                <p id="progressPercent">0%</p>
             </div>
-            <p id="progressPercent" style="font-size:18px; font-weight:bold; color:#2c7be5;">0%</p>
         </div>
     </div>
 
     <script>
+        function resetForm() {
+            if (!confirm('Reset everything? All inputs will be cleared.')) return;
+            document.querySelector('form').reset();
+            document.getElementById('loadingSection').style.display = 'none';
+            document.querySelector('button[type="submit"]').disabled = false;
+            if (pollInterval) clearInterval(pollInterval);
+        }
         let pollInterval = null;
 
         function showLoading() {
@@ -122,9 +345,9 @@
             fetch('/progress')
                 .then(r => r.json())
                 .then(data => {
-                    document.getElementById('progressBar').style.width    = data.percent + '%';
-                    document.getElementById('progressPercent').innerText  = data.percent + '%';
-                    document.getElementById('loadingMsg').innerText       = data.message;
+                    document.getElementById('progressBar').style.width   = data.percent + '%';
+                    document.getElementById('progressPercent').innerText = data.percent + '%';
+                    document.getElementById('loadingMsg').innerText      = data.message;
 
                     if (data.percent >= 100) {
                         clearInterval(pollInterval);
@@ -133,6 +356,30 @@
                     }
                 });
         }
+
+        function setMode(field, mode) {
+            const input   = document.getElementById(field + '_input');
+            const hidden  = document.getElementById(field + '_mode');
+            const manBtn  = document.getElementById(field + '_manual_btn');
+            const autoBtn = document.getElementById(field + '_auto_btn');
+
+            hidden.value = mode;
+
+            if (mode === 'manual') {
+                input.style.display = 'block';
+                input.required      = true;
+                manBtn.classList.add('active-mode');
+                autoBtn.classList.remove('active-mode');
+            } else {
+                input.style.display = 'none';
+                input.required      = false;
+                input.value         = '';
+                autoBtn.classList.add('active-mode');
+                manBtn.classList.remove('active-mode');
+            }
+        }
+
     </script>
+
 </body>
 </html>

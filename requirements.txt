@@ -1,0 +1,6 @@
+flask
+requests
+pillow
+thefuzz
+geopy
+pywin32
